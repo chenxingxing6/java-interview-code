@@ -1,6 +1,10 @@
 package 线程;
 
+import org.junit.Test;
+
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,5 +37,37 @@ public class ExecutorsPoolTest {
     public static void main(String[] args) {
         ExecutorsPoolTest test = new ExecutorsPoolTest();
         System.out.println(isRunning(test.ctl.get()));
+    }
+
+    @Test
+    public void test01(){
+        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+        for (int i = 0; i < 20; i++) {
+            final int ii = i;
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        System.out.println(Thread.currentThread().getName() + "\ttask"+ ii +"正在执行.....");
+                        System.out.println(Thread.currentThread().getName() + "\ttask"+ ii +"执行完毕.....");
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        executor.shutdown();
+    }
+
+    @Test
+    public void test02(){
+        int i = 0;
+        for (;;){
+            i ++;
+            System.out.println(i);
+            if (i > Integer.MAX_VALUE){
+                break;
+            }
+        }
     }
 }
