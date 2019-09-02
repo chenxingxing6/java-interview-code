@@ -50,4 +50,50 @@ public class CollectionTest {
         }).start();
 
     }
+
+
+    final static HashMap<String, String> map = new HashMap<>();
+
+    /**
+     * 验证hashMap是线程不安全的
+     * 读写不同步，操作不是原子性，内存的可见性
+     */
+    @Test
+    public void test04(){
+        new Thread(() -> {
+            int j = 0;
+            while(j < 10) {
+                map.put("end", String.valueOf(j));
+                System.out.println("put map:" + map);
+                j ++;
+            }
+        }).start();
+        //  启动线程
+        for(int i = 0; i < 10; i++) {
+            new Thread(new R(String.valueOf(i))).start();
+        }
+    }
+
+    //  运行的线程
+    public static class R implements Runnable {
+        private String end;
+        public R(String end) {
+            super();
+            this.end = end;
+        }
+        @Override
+        public void run() {
+            System.out.println("map" + map);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            while(!this.end.equals(map.get("end"))) {
+                System.out.println(this.end);
+            }
+            System.out.println(this.end + ": is End!");
+        }
+
+    }
 }

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true" scanPeriod="60 seconds">
+    <!--<substitutionProperty name="log.dir" value="/opt/logs/spring-boot/mycloud"/>-->
+    <!--<jmxConfigurator/>-->
+    <timestamp key="byDay" datePattern="yyyy-MM-dd"/>
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] %marker %msg%n"/>
+    <property name="ALERT_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level marker: %marker。 %message%n%xException%n"/>
+    <!-- 日志输出路径 -->
+    <springProperty scope="context" name="log.path" source="log.path"/>
+    <!-- 是否立即刷新日志缓存区 -->
+    <springProperty scope="context" name="log.immediate.flush" source="log.immediate.flush"/>
+    <!-- 根日志级别 -->
+    <springProperty scope="context" name="log.root.level" source="log.root.level"/>
+    <!-- 业务日志级别 -->
+    <springProperty scope="context" name="log.business.level" source="log.business.level"/>
+    <!-- 业务日志包名 -->
+    <property scope="context" name="log.business.name" value="com.example.modules"/>
+    <!-- SQL日志包名 -->
+    <property scope="context" name="log.sql.name" value="com.example.modules.sys.dao"/>
+    <!-- SQL日志级别 -->
+    <springProperty scope="context" name="log.sql.level" source="log.sql.level"/>
+    <!-- 资源引用 -->
+    <!--<include resource="includedConfig.xml"/>-->
+
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- SQL日志 -->
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/sql.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/sql.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 业务异常日志 -->
+    <appender name="BIZ_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/biz_error.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/biz_error.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 5 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 业务日志 -->
+    <appender name="BUSINESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/business.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/business.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 5 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 慢服务日志 -->
+    <appender name="TIME_LONG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/time_long.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/time_long.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 5 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 消息通知日志 -->
+    <appender name="MQ" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/notification.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/notification.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 30 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 大盘汇总日志 -->
+    <appender name="ALERT_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/alert_monitor.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/alert_monitor.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 附加日志 -->
+    <appender name="ADDITION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/addition.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bak/addition.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ALERT_PATTERN}</pattern>
+            <immediateFlush>${log.immediate.flush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <logger name="mq" additivity="false">
+        <level>INFO</level>
+        <appender-ref ref="MQ"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <logger name="access" additivity="false">
+        <level>INFO</level>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <logger name="bizError" additivity="false">
+        <level>WARN</level>
+        <appender-ref ref="BIZ_ERROR"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <logger name="timeLong" additivity="false">
+        <level>DEBUG</level>
+        <appender-ref ref="TIME_LONG"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <logger name="alertMonitor" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <logger name="addition" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="ADDITION"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <!-- 业务日志：解决getLogger(xx.class) additivity:默认true 如果为false，则不会将日志流反馈到root中-->
+    <logger name="${log.business.name}" additivity="false">
+        <level value="${og.business.level}"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ALERT_MONITOR"/>
+    </root>
+
+     <!--打印SQL-->
+    <logger name="java.sql.ResultSet" level="DEBUG"/>
+    <logger name="java.sql.Connection" level="DEBUG" />
+    <logger name="java.sql.Statement" level="DEBUG" />
+    <logger name="java.sql.PreparedStatement" level="DEBUG" />
+    <logger name="org.mybatis.spring" level="DEBUG" additivity="false"/>
+
+    <!-- sql打印到文件 -->
+    <logger name="${log.sql.name}" additivity="false">
+        <level value="${log.sql.level}"/>
+        <appender-ref ref="SQL"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+</configuration>
