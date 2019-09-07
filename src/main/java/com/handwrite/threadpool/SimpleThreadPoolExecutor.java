@@ -21,7 +21,6 @@ public class SimpleThreadPoolExecutor extends Thread {
     interface DiscardPolicy {
         void discard() throws DiscardException;
     }
-
     static class DiscardException extends RuntimeException {
         DiscardException(String message) {
             super(message);

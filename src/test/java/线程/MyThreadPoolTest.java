@@ -1,9 +1,12 @@
 package 线程;
 
 import com.handwrite.threadpool.SimpleThreadPoolExecutor;
+import com.handwrite.threadpool.my.IMyExecutorService;
+import com.handwrite.threadpool.my.MyThreadPoolExecutor;
 import org.junit.Test;
 import org.springframework.util.StopWatch;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -14,24 +17,32 @@ import java.util.concurrent.TimeUnit;
  * Desc:
  */
 public class MyThreadPoolTest {
-    SimpleThreadPoolExecutor executor = new SimpleThreadPoolExecutor();
+    // SimpleThreadPoolExecutor executor = new SimpleThreadPoolExecutor();
     private static ThreadPoolExecutor executor1 = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    IMyExecutorService myExecutor = new MyThreadPoolExecutor(
+            2,
+            100,
+            3,
+            TimeUnit.SECONDS,
+            new ArrayBlockingQueue(1000),
+            new MyThreadPoolExecutor.MyAbortPolicy());
+
 
     @Test
     public void test00(){
         StopWatch watch = new StopWatch();
         watch.start();
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 1000; i++) {
             final int ii = i;
-            executor.submit(new Runnable() {
+            myExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("test00-执行任务------线程" + ii + "："+ Thread.currentThread());
                     try {
                         TimeUnit.MILLISECONDS.sleep(10);
-                    } catch (Exception e) {
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
-                    System.out.println("test2-执行任务------线程" + ii + "："+ Thread.currentThread());
                 }
             });
         }
@@ -72,7 +83,7 @@ public class MyThreadPoolTest {
                 @Override
                 public void run() {
                     try {
-                        TimeUnit.MILLISECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(1);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -97,7 +108,7 @@ public class MyThreadPoolTest {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    //System.out.println("test2-执行任务------线程" + ii + "："+ Thread.currentThread());
+                    System.out.println("test2-执行任务------线程" + ii + "："+ Thread.currentThread());
                 }
             });
         }
